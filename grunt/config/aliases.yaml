@@ -1,0 +1,13 @@
+lint:
+- 'jshint'
+- 'jsbeautifier:lint'
+
+js_on_watch:
+- 'jsbeautifier'
+- 'lint'
+
+pre-push:
+- 'lint'
+
+default:
+- 'watch'

@@ -1,0 +1,32 @@
+---
+tags:
+- 'javascript'
+- 'amd'
+- 'module'
+- 'flightjs'
+language: 'JavaScript'
+abbreviation: amdflight
+---
+define( [
+    'flight/lib/component'
+], function (
+    component
+) {
+    return component( __functionNameUI__ );
+
+    function __functionNameUI__() {
+
+        this.attributes( {
+        } );
+
+        this.__startFn__ = function(){
+        };
+
+        this.after( 'initialize', function () {
+            @cursor
+
+            this.__startFn__();
+        } );
+    }
+
+} );

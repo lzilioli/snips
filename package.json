@@ -1,0 +1,24 @@
+{
+  "name": "portable-snippets",
+  "version": "0.0.0",
+  "description": "Share and port your snippets between multiple tools.",
+  "main": "main.js",
+  "author": "Luke Zilioli",
+  "dependencies": {
+    "glob": "~4.0.6",
+    "lz-node-utils": "git+http://git@github.com/lzilioli/lz-node-utils.git",
+    "sqlite3": "https://github.com/mapbox/node-sqlite3/tarball/master",
+    "underscore": "^1.7.0",
+    "yaml-front-matter": "^3.0.1"
+  },
+  "devDependencies": {
+    "grunt": "~0.4.5",
+    "grunt-contrib-jshint": "~0.6.0",
+    "grunt-contrib-watch": "~0.5.3",
+    "grunt-todo": "~0.4.0",
+    "jshint-stylish": "^0.4.0",
+    "shelljs": "~0.3.0",
+    "load-grunt-config": "^0.12.0",
+    "grunt-jsbeautifier": "~0.2.7"
+  }
+}
