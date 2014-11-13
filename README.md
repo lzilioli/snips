@@ -149,6 +149,9 @@ cd snippets
 # Or to get started with the project's sample snippets, run the following line
 # cp -r ../snippets-sample/
 
+# Go back to the project root
+cd ..
+
 # This will generate all supported outputs to the export directory
 grunt dash text-mate
 ```
@@ -166,75 +169,22 @@ Exporting snippets happens by way of grunt tasks. This project currently support
 
 Note that support for TextMate style snippets could be added by adding an additional entry in `grunt/config/text-mate.js` with `outputExtension: '.text-mate'` (or whatever extension TextMate expects).
 
-### `grunt dash`
+# Upgrading your snippets
 
-Reads in all of the snippet files within the `snippets` directory, and exports them to a SQLite3 database compatible with Dash. Just [point Dash to the exported file](http://kapeli.com/dash_guide#managingSnippets).
-
-**WARNING** Currently, this task will destroy and recreate your dash database. It is intended that you use your snippets directory as the source of truth for your snippets. Don't put any snippets directly into Dash.
-
-#### Config
-
-*Note:* Unless you are working on this tool itself, you likely will not need to worry about the config for this exporter.
-
-```javascript
-main: {
-    options: {
-        // See the below Implementing an Exporter section for an explanation
-        // of the translator
-        translator: global.req( 'dash-translator' )({
-            // Optional config varDelimiter, should correspond
-            // to the setting in dash preferences (defaults to __)
-            // (this is true only of the dash-translator, note that the
-            // text-mate translator does not require an invocation
-            // prior to exposing the translator API.
-            varDelimiter: '__'
-        }),
-        // Where to get the snippets
-        snippetSource: '<%= vars.paths.snippets %>',
-        // Where to put the dash SQLite DB
-        exportFile: 'export/Snippets.dash',
-        // Will prefix your snippets abbreviations as recommended
-        // in the dash docs http://kapeli.com/guide/guide.html#snippetTips
-        abbreviationPrefix: '`'
-    }
-}
-```
-
-[dash snippet reference](http://kapeli.com/guide/guide.html#introductionToSnippets)
-
-### `grunt text-mate`
-
-Reads in all of the snippet files within the `snippets` directory, and exports them to a directory using syntax that is compatible with TextMate snippets.
-
-The [AMDSnippets repo](https://github.com/pierceray/AMDsnippets/) has a good step-by-step on how to install AMDSnippets for SublimeText.
-
-**For ST3:**
+You may find it helpful to define the following alias (or something similar), to quickly re-export your snippets when you change the files in the `snippets` directory:
 
 ```bash
-cd ~/Library/"Application Support"/"Sublime Text 3"/Packages/
-ln -s /path/to/repo/export/SublimeSnippets ./snippets
-```
-
-#### Config
-
-*Note:* Unless you are working on this tool itself, you likely will not need to worry about the config for this exporter.
-
-```javascript
-main: {
-    options: {
-        // See the below Implementing an Exporter section for an explanation
-        // of the translator
-        translator: global.req( 'text-mate-translator' ),
-        // Where to get the snippets
-        snippetSource: '<%= vars.paths.snippets %>',
-        // Where to put the snippets (directory structure from their source
-        // will be preserved)
-        snippetDest: 'export/AMDsnippets/',
-        // Extension for each exported snippet within snippetDest
-        outputExtension: '.sublime-snippet'
-    }
+update_snippets() {
+    # Go into the project directory
+    pushd ~/Projects/portable-snippets/ &&
+    # Do a fresh build of the snippets (this example is for dash)
+    grunt clean dash &&
+    # Go back to whatever folder I was in before this alias started running
+    popd
 }
 ```
+
+Alternately, you can `cd` into the portable-snippets repo and run `grunt`. This will watch the files in your snippet directory, and re-export whenever they change.
 
 # Technical Deep Dive
 
@@ -320,18 +270,66 @@ module.exports = ( function() {
 
 ```
 
-# Upgrading your snippets
+### Exporter Config Documentation
 
-You may find it helpful to define the following alias (or something similar), to quickly re-export your snippets when you change the files in the `snippets` directory:
+### `grunt dash`
 
-```bash
-update_snippets() {
-    # Go into the project directory
-    pushd ~/Projects/portable-snippets/ &&
-    # Do a fresh build of the snippets (this example is for dash)
-    grunt clean dash &&
-    # Go back to whatever folder I was in before this alias started running
-    popd
+Reads in all of the snippet files within the `snippets` directory, and exports them to a SQLite3 database compatible with Dash. Just [point Dash to the exported file](http://kapeli.com/dash_guide#managingSnippets).
+
+**WARNING** Currently, this task will destroy and recreate your dash database. It is intended that you use your snippets directory as the source of truth for your snippets. Don't put any snippets directly into Dash.
+
+#### Config
+
+*Note:* Unless you are working on this tool itself, you likely will not need to worry about the config for this exporter.
+
+```javascript
+main: {
+    options: {
+        // See the below Implementing an Exporter section for an explanation
+        // of the translator
+        translator: global.req( 'dash-translator' )({
+            // Optional config varDelimiter, should correspond
+            // to the setting in dash preferences (defaults to __)
+            // (this is true only of the dash-translator, note that the
+            // text-mate translator does not require an invocation
+            // prior to exposing the translator API.
+            varDelimiter: '__'
+        }),
+        // Where to get the snippets
+        snippetSource: '<%= vars.paths.snippets %>',
+        // Where to put the dash SQLite DB
+        exportFile: 'export/Snippets.dash',
+        // Will prefix your snippets abbreviations as recommended
+        // in the dash docs http://kapeli.com/guide/guide.html#snippetTips
+        abbreviationPrefix: '`'
+    }
+}
+```
+
+[dash snippet reference](http://kapeli.com/guide/guide.html#introductionToSnippets)
+
+### `grunt text-mate`
+
+Reads in all of the snippet files within the `snippets` directory, and exports them to a directory using syntax that is compatible with TextMate snippets.
+
+#### Config
+
+*Note:* Unless you are working on this tool itself, you likely will not need to worry about the config for this exporter.
+
+```javascript
+main: {
+    options: {
+        // See the below Implementing an Exporter section for an explanation
+        // of the translator
+        translator: global.req( 'text-mate-translator' ),
+        // Where to get the snippets
+        snippetSource: '<%= vars.paths.snippets %>',
+        // Where to put the snippets (directory structure from their source
+        // will be preserved)
+        snippetDest: 'export/SublimeSnippets/',
+        // Extension for each exported snippet within snippetDest
+        outputExtension: '.sublime-snippet'
+    }
 }
 ```
 
