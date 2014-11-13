@@ -239,9 +239,9 @@ module.exports = ( function() {
         },
         // This should return text that the app's snippet engine
         // would recognize as the location for your cursor once
-        // the snippet has been placed. (not all apps support this)
+        // the snippet has been placed.
         cursor: function() {
-            return '';
+            return '$0';
         }
     };
 
