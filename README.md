@@ -115,11 +115,21 @@ npm install -g grunt-cli
 npm install
 # Install git hooks to support development
 grunt hooks
+
+# Last Step
+# #########
+
 # Copy the `snippets-sample/` directory to `snippets/`
 cp -r snippets-sample/ snippets
+# --- OR ---
+mkdir snippets
+cd snippets
+git clone <snippet repo url>
 ```
 
 **The last step is crutial to getting the export step to work.** The snippets directory is the source of snippets for the export tasks.
+
+If you choose to clone a snippet repo, I've got one [here](https://github.com/lzilioli/my-snippets), but I highly suggest you make your own (feel free to fork mine).
 
 This snippets directory is your own. Anything in that directory and it's subfolders with a `.snippet` extension will be included when exporting snippets. It's .gitignored, so feel free to do anything you'd like with it, including pulling in additional repos.
 
