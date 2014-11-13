@@ -6,9 +6,9 @@
   "dependencies": {
     "glob": "~4.0.6",
     "handlebars": "^2.0.0",
-    "lz-node-utils": "git+http://git@github.com/lzilioli/lz-node-utils.git",
+    "lz-node-utils": "git+http://git@github.com/lzilioli/lz-node-utils.git#fc71916",
     "mkpath": "^0.1.0",
-    "sqlite3": "https://github.com/mapbox/node-sqlite3/tarball/master",
+    "sqlite3": "https://github.com/mapbox/node-sqlite3/tarball/master#ab70efa1db",
     "underscore": "^1.7.0",
     "yaml-front-matter": "^3.0.1"
   },
