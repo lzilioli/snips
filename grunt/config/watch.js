@@ -3,8 +3,8 @@ module.exports = {
 		files: [ '<%= vars.paths.js %>' ],
 		tasks: [ 'js_on_watch' ]
 	},
-	snippets: {
-		files: [ '<%= vars.paths.snippets %>' ],
-		tasks: [ 'dash' ]
+	dev: {
+		files: [ '<%= vars.paths.js %>', '<%= vars.paths.snippets %>' ],
+		tasks: [ 'dev_on_watch' ]
 	}
 };

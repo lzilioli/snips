@@ -18,11 +18,40 @@ This project is comprised of 4 components:
 | snippet-loader | A JS module that is responsible for reading your template files and returning a model representing them for export. (this is used internally by exporters) |
 | translators | A JS module that is responsible for converting the portable-snippets format into a format that the target application can understand. Translators usually have a 1:1 mapping with exporters. |
 
-For an in-depth technical overview, see [Technical Deep Dive](#technical-deep-ive)
+For an in-depth technical overview, see [Technical Deep Dive](#technical-deep-dive)
 
 # Snippets
 
 Snippets are simply handlebars templates that call a specialized set of helper functions (they can also contain yaml front matter).
+
+## YAML-Front
+
+You can include (optional) yaml-front matter at the beginning of your snippets.
+
+### Sample
+
+```javascript
+---
+tags:
+- 'javascript'
+- 'amd'
+- 'module'
+- 'flightjs'
+language: 'JavaScript'
+abbreviation: amdflight
+abbreviationPrefix: ''
+---
+```
+
+
+| Key | Description |
+| ----- | ------ |
+| tags | Array of tags associated with the snippet. (not all exporters will use this value) |
+| language | The language that the snippet is written in. |
+| abbreviation | The name for the snippet, if none is specified, the filename will be used. |
+| abbreviationPrefix | This will override the abbreviationPrefix passed to the exporter. |
+
+*Note:* Currently, the text-mate exporter does not take the language or the tags into account.
 
 ## Helpers
 
@@ -37,7 +66,7 @@ There are a couple of helper functions (these are regular [handlebars helper fun
 
 Below is a sample snippet for an AMD-style module that returns a new Twitter flight component.
 
-```
+```javascript
 ---
 tags:
 - 'javascript'
@@ -104,7 +133,7 @@ Exporting snippets happens by way of grunt tasks. This project currently support
 - [Sublime-Style Snippets](https://github.com/pierceray/AMDsnippets) - `grunt text-mate`
     - Note that support for TextMate style snippets could be added by adding an additional entry in `grunt/config/text-mate.js` with `outputExtension: '.text-mate'` (or whatever extension TextMate expects).
 
-For either of the below tasks, once the export has completed, you can point your relevant app to the exported snippet library, or symlink the exported directory as appropriate.
+For either of the below tasks, once the export has completed, you can point your relevant app to the exported snippet library (in the .gitignored `export/` directory), or symlink the exported directory as appropriate.
 
 ### `grunt dash`
 
@@ -148,6 +177,13 @@ Reads in all of the snippet files within the `snippets` directory, and exports t
 
 The [AMDSnippets repo](https://github.com/pierceray/AMDsnippets/) has a good step-by-step on how to install AMDSnippets for SublimeText.
 
+**For ST3:**
+
+```bash
+cd ~/Library/"Application Support"/"Sublime Text 3"/Packages/
+ln -s /path/to/repo/export/SublimeSnippets ./snippets
+```
+
 #### Config
 
 *Note:* Unless you are working on this tool itself, you likely will not need to worry about the config for this exporter.
@@ -173,7 +209,7 @@ main: {
 
 ## Exporters
 
-Exporters are grunt tasks. Their expected configurations can be found above (this varies by exporter). Upon being run, `exporter` tasks use the `snippet-loader` module to get an in-memory model of the snippets in the snippets directory. It can iterate over this model to do its exporting (to see a sample exporter, look at `grunt/tasks/*-exporter.js`). Internally, the `exporter` exposes the `translator` to the `snippet-loader`. As the `snippet-loader` is loading the templates, it will call `translator.translate( snippetContents )`. The return value should be a snippet body that the target export application can understand. If defined, `snippet-loader` will also call `translator.snipTeardown()` in-between snippets, so that the translator can do any necessary internal state management. The translator is responsible for loading handlebars, and defining the correct set of [handlebars helper functions](http://handlebarsjs.com/#helpers) such that the `translator.translate()` function returns the correct result (this function is also responsible for compiling and running the handlebars interpreter on the snippet's contents).
+Exporters are grunt tasks. Their expected configurations can be found above (this varies by exporter). Upon being run, `exporter` tasks use the `snippet-loader` module to get an in-memory model of the snippets in the snippets directory. It can iterate over this model to do its exporting (to see a sample exporter, look at `grunt/tasks/*-exporter.js`). Internally, the `exporter` exposes the `translator` to the `snippet-loader`. As the `snippet-loader` is loading the templates, it will call `translator.translate( snippetData )`. The return value should be a snippet body that the target export application can understand. If defined, `snippet-loader` will also call `translator.snipTeardown()` in-between snippets, so that the translator can do any necessary internal state management. The translator is responsible for loading handlebars, and defining the correct set of [handlebars helper functions](http://handlebarsjs.com/#helpers) such that the `translator.translate()` function returns the correct result (this function is also responsible for compiling and running the handlebars interpreter on the snippet's contents).
 
 - I anticipate the set of available helpers within snippets to grow as the number of exporters grows.
 - If creating new exporters or translators, please try and follow the naming convention `appName-translator.js` or `appName-exporter.js`.
@@ -209,14 +245,37 @@ module.exports = ( function() {
         }
     };
 
+    var wrapperTmpl = [
+        // The translate function registers the ___snippet helper
+        '<snippet><content><![CDATA[{{{ ___snippet }}}]]></content>',
+        // abbreviation and description come from the snippetData
+        '<tabTrigger>{{ abbreviation }}</tabTrigger>',
+        '<description>{{ description }}</description>',
+        // The translate function registers the ___scope helper (currently unused, commenting out)
+        // '<scope>{{ ___scope }}</scope>',
+        '</snippet>'
+    ].join( '\n' );
+
     // Public API
     return {
         // This function will receive an argument with a 'contents' property.
         // It should return the contents such that the target snippet
         // application would understand the contents of the snippet's body.
-        translate: function( opts ) {
+        translate: function( snippetData ) {
+            // Register the static helpers defined above
             handlebars.helpers = helpers;
-            return handlebars.compile( opts.contents )();
+            // Get the snippet body
+            var rendered = handlebars.compile( snippetData.__content )();
+            // Register some helpers so we can handlebars the wrapperTmpl (defined above)
+            handlebars.registerHelper( '___snippet', rendered );
+            // Commented out until we support this
+            // handlebars.registerHelper( '___scope', function() {
+            //  return getScope( snippetData.language );
+            // } );
+            // handlebars-ify the wrapperTmpl using snippetData as model
+            var fullSnippet = handlebars.compile( wrapperTmpl )( snippetData );
+
+            return fullSnippet;
         },
         // This will get called by `lib/snippet-loader.js` in between
         // processing snippets. This way, you can manage any internal state you
@@ -251,8 +310,8 @@ update_snippets() {
 
 TODO: Right now, theres a lot of duplicated code between the translators and the tasks responsible for outputting the snippet library for the given app. Both of these components should inherit from a base module that does a lot of the redundant work.
 
-TODO: Take advantage of the global.config with overrides to allow customization of snippet extension, pattern, etc.
+TODO: Take advantage of the global.config with overrides to allow customization of snippet extension, pattern, etc. (avoid .gitignoring grunt configs)
 
 TODO: Enable partial support within the snippets directory.
 
-TODO: Let yaml front in snippet opt out of, or define a different snippet prefix in abbreviation
+TODO: Convert global features into its own module (or fold into lz-node-utils)

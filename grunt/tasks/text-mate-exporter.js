@@ -7,26 +7,32 @@ var util = require( 'lz-node-utils' );
 module.exports = function( grunt ) {
 	grunt.registerMultiTask( 'text-mate', 'Export the snippets in a format for TextMate.', function() {
 
+		// Cuz screw typing all that
 		var opts = this.data.options;
 
-		var snippets = global.req( 'snippet-loader' );
-		var snippetData = snippets.load( opts );
+		// Load the snippets
+		var snippetLoader = global.req( 'snippet-loader' );
+		var snippetData = snippetLoader.load( opts );
 
+		// Gotta know where to get 'em
+		if ( !opts.snippetSource ) {
+			grunt.fail.fatal( 'No snippetSource specified' );
+		}
+		// Gotta know where to put 'em
 		if ( !opts.snippetDest ) {
-			throw new Error( 'No snippetDest specified' );
+			grunt.fail.fatal( 'No snippetDest specified' );
 		}
 
 		// Make sure directories up to the DB exist (like mkdir -p)
 		mkpath.sync( global.pth( opts.snippetDest ) );
 
 		// Get a map from file source to destination
-		// TODO: Isn't there a better way?
 		var destMap = util.file.expandMapping( opts.snippetSource, opts.snippetDest, {
-			trim: 'snippets/',
+			flatten: true,
 			ext: opts.outputExtension || undefined
 		} );
 
-		// Insert the things
+		// Loop over and insert all of the snippets
 		_.each( snippetData.snippets, function( snippet ) {
 			insertSnippet( snippet, destMap[ snippet.__filepath ] );
 		} );
@@ -38,6 +44,7 @@ module.exports = function( grunt ) {
  ******************************************************************************/
 
 function insertSnippet( snippet, snippetDest ) {
+	// Make sure the directory exists  (like mkdir -p)
 	mkpath.sync( path.dirname( snippetDest ) );
 	fs.writeFileSync( snippetDest, snippet.__content );
 }

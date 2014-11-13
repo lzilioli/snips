@@ -6,8 +6,14 @@ js_on_watch:
 - 'jsbeautifier'
 - 'lint'
 
+dev_on_watch:
+- js_on_watch
+- clean
+- dash
+- text-mate
+
 pre-push:
 - 'lint'
 
 default:
-- 'watch'
+- 'watch:dev'

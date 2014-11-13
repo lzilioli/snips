@@ -4,16 +4,11 @@ tags:
 - 'amd'
 - 'module'
 language: 'JavaScript'
-abbreviation: amdnamed
 ---
-define(
-    '{{{v "module_id" }}}',
-[
+define( [
     '{{{v "dependencies" }}}'
 ], function (
     {{{v "dependParam" }}}
 ) {
     {{{v "dependParam" }}}.{{{v "methodToCall" }}}();
-
-    {{{ cursor }}}
 } );

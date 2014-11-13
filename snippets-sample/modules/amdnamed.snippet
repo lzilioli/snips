@@ -4,12 +4,15 @@ tags:
 - 'amd'
 - 'module'
 language: 'JavaScript'
-abbreviation: amdanon
 ---
 define( [
+    '{{{v "moduleid" }}}',
+[
     '{{{v "dependencies" }}}'
 ], function (
     {{{v "dependParam" }}}
 ) {
     {{{v "dependParam" }}}.{{{v "methodToCall" }}}();
+
+    {{{ cursor }}}
 } );

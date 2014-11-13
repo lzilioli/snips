@@ -4,7 +4,7 @@ module.exports = function() {
 			options: {
 				translator: global.req( 'text-mate-translator' ),
 				snippetSource: '<%= vars.paths.snippets %>',
-				snippetDest: 'export/AMDsnippets/',
+				snippetDest: 'export/SublimeSnippets/',
 				outputExtension: '.sublime-snippet'
 			}
 		}
