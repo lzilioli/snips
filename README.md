@@ -57,7 +57,7 @@ TODO: Fix tags bug for dash, tags are being mismatched
 
 ### abbreviationPrefix
 
-As [recommended by Dash](http://kapeli.com/dash_guide#snippetTips), you might want to prefix your snippet names. portable-snippets will determine the prefix to use for your snippet name as follows:
+As [recommended by Dash](http://kapeli.com/guide/guide.html#snippetTips), you might want to prefix your snippet names. portable-snippets will determine the prefix to use for your snippet name as follows:
 
 - If defined, use the one in the snippet's yaml-front
 - Else, if defined, use the one defined in the snippet's parent directory's `dir.abbreviationPrefix` file
