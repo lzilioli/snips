@@ -339,3 +339,5 @@ TODO: Convert global features into its own module (or fold into lz-node-utils)
 TODO: Create a cheat sheet exporter
 
 TODO: How to make a snippet that desires {{ }} in the output?
+
+TODO: Write importers so that people can easily migrate their existing snippet libraries to the portable format.
