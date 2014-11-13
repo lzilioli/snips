@@ -53,6 +53,17 @@ abbreviationPrefix: ''
 
 *Note:* Currently, the text-mate exporter does not take the language or the tags into account.
 
+TODO: Fix tags bug for dash, tags are being mismatched
+
+### abbreviationPrefix
+
+As [recommended by Dash](http://kapeli.com/dash_guide#snippetTips), you might want to prefix your snippet names. portable-snippets will determine the prefix to use for your snippet name as follows:
+
+- If defined, use the one in the snippet's yaml-front
+- Else, if defined, use the one defined in the snippet's parent directory's `dir.abbreviationPrefix` file
+- Else, use the one passed as an argument to the task
+- If none of those are defined, use nothing
+
 ## Helpers
 
 There are a couple of helper functions (these are regular [handlebars helper functions](http://handlebarsjs.com/#helpers)) available to you within the snippet's body. You can call them with either `{{ double bracket syntax }}` or `{{{ triple bracket syntax }}}` ([here's](http://handlebarsjs.com/#html-escaping) the difference). These helpers are used by exporters when they are converting the snippet's body into something the target application can understand. They are the key to making the snippets portable between formats.
@@ -120,7 +131,8 @@ grunt hooks
 # #########
 
 # Copy the `snippets-sample/` directory to `snippets/`
-cp -r snippets-sample/ snippets
+mkdir snippets
+cp -r snippets-sample/ snippets/sample
 # --- OR ---
 mkdir snippets
 cd snippets
