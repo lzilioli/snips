@@ -7,9 +7,9 @@ language: 'JavaScript'
 abbreviation: amdanon
 ---
 define( [
-    '__dependencies__'
+    '{{{v "dependencies" }}}'
 ], function (
-    __dependParam__
+    {{{v "dependParam" }}}
 ) {
-    __dependParam__.__methodToCall__();
+    {{{v "dependParam" }}}.{{{v "methodToCall" }}}();
 } );

@@ -12,20 +12,20 @@ define( [
 ], function (
     component
 ) {
-    return component( __functionNameUI__ );
+    return component( {{{v "functionNameUI" }}} );
 
-    function __functionNameUI__() {
+    function {{{v "functionNameUI" }}}() {
 
         this.attributes( {
         } );
 
-        this.__startFn__ = function(){
+        this.{{{v "startFn" }}} = function(){
         };
 
         this.after( 'initialize', function () {
-            @cursor
+            {{{ cursor }}}
 
-            this.__startFn__();
+            this.{{{v "startFn" }}}();
         } );
     }
 

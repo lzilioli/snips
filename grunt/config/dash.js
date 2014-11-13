@@ -1,7 +1,8 @@
 module.exports = function() {
 	return {
-		main: {
+		snippets: {
 			options: {
+				translator: global.req( 'dash-translator' )(),
 				snippetSource: '<%= vars.paths.snippets %>',
 				exportFile: 'export/Snippets.dash',
 				abbreviationPrefix: '`'

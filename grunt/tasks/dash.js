@@ -9,15 +9,17 @@ module.exports = function( grunt ) {
 
 		var done = this.async();
 
-		var snippets = global.req( 'snippet-loader' );
-		var snippetData = snippets.load( this.data.options );
+		var opts = this.data.options;
 
-		if ( !this.data.options.exportFile ) {
+		var snippets = global.req( 'snippet-loader' );
+		var snippetData = snippets.load( opts );
+
+		if ( !opts.exportFile ) {
 			throw new Error( 'No exportFile specified' );
 		}
 
 		// Get an instance of the DB
-		var db = getDb( this.data.options.exportFile );
+		var db = getDb( opts.exportFile );
 
 		// Insert the things
 		db.serialize( function() {

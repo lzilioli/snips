@@ -4,4 +4,4 @@ node_modules/
 .sass-cache/
 config/settings.js
 export/
-*.ignore
+*_ignore

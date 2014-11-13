@@ -7,13 +7,13 @@ language: 'JavaScript'
 abbreviation: amdnamed
 ---
 define(
-    '__module_id__',
+    '{{{v "module_id" }}}',
 [
-    '__dependencies__'
+    '{{{v "dependencies" }}}'
 ], function (
-    __dependParam__
+    {{{v "dependParam" }}}
 ) {
-    __dependParam_.__methodToCall__();
+    {{{v "dependParam" }}}.{{{v "methodToCall" }}}();
 
-    @cursor
+    {{{ cursor }}}
 } );
