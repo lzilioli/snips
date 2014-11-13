@@ -1,15 +1,37 @@
 snippets
 =====
 
+**Goal**
+
+To create a portable, plain-text, file-based syntax for your code snippets. No more being tied to some random snippet app and its xml or sqlite storage. As well, to create an easy means of exporting your snippets to a format that other applications (such as Dash, or SublimeText) can understand.
+
 Inspired by [AMDSnippets](https://github.com/pierceray/AMDsnippets/) by [@pierceray](https://github.com/pierceray/).
 
-# Goal
+# Brief Technical Overview
 
-To create a universal snippet format with an easy way of porting the snippets to various formats for various snippet apps (such as Dash, TextMate, etc.).
+This project is comprised of 4 components:
 
-# Snippet Format
+| Component | Description |
+| --------- | ----------- |
+| [snippets](#snippets) | A portable, plain-text, file-based syntax for your code snippets. No more being tied to some random snippet app and its xml or sqlite storage. |
+| [exporters](#exporters) | Grunt multi-tasks that interact with the snippet-loader in order to export your templates to a format for a target application. |
+| snippet-loader | A JS module that is responsible for reading your template files and returning a model representing them for export. (this is used internally by exporters) |
+| translators | A JS module that is responsible for converting the portable-snippets format into a format that the target application can understand. Translators usually have a 1:1 mapping with exporters. |
 
-Snippets are simply handlebars templates that contain yaml front matter that call a specialized set of helper functions.
+For an in-depth technical overview, see [Technical Deep Dive](#technical-deep-ive)
+
+# Snippets
+
+Snippets are simply handlebars templates that call a specialized set of helper functions (they can also contain yaml front matter).
+
+## Helpers
+
+There are a couple of helper functions (these are regular [handlebars helper functions](http://handlebarsjs.com/#helpers)) available to you within the snippet's body. You can call them with either `{{ double bracket syntax }}` or `{{{ triple bracket syntax }}}` ([here's](http://handlebarsjs.com/#html-escaping) the difference). These helpers are used by exporters when they are converting the snippet's body into something the target application can understand. They are the key to making the snippets portable between formats.
+
+| Helper name | Description | Arguments | Example |
+| ----------- | ----------- | --------- | ------- |
+| `v` | Use to name a variable in your snippet | `name` for variable | `{{{v "variableName"}}}` |
+| `cursor` | Some snippet apps provide a means to place the cursor once the snippet has been placed in the editor. Call this helper to output the proper syntax to indicate the cursor's position. | none | `{{{ cursor }}}` |
 
 ## Sample Snippet
 
@@ -50,58 +72,52 @@ define( [
 } );
 ```
 
-## Available Helpers
-
-These are regular handlebars helpers that you can use in your templates. You can call them with either `{{ double bracket syntax }}` or `{{{ triple bracket syntax }}}`
-
-| Helper name | Description | Arguments | Example |
-| ----------- | ----------- | --------- | ------- |
-| `v` | Use to name a variable in your snippet | `name` for variable | `{{{v "variableName"}}}` |
-| `cursor` | Some snippet apps provide a means to place the cursor once the snippet has been placed in the editor. Call this helper to output the proper syntax to indicate the cursor's position. | none | `{{{ cursor }}}` |
-
 # Setup
 
 ```bash
+# Clone the repo
 git clone https://github.com/lzilioli/portable-snippets.git
+# Go into the directory
 cd portable-snippets
+# You only need the next 2 commands if you dont the stuff installed
 brew install npm
 npm install -g grunt-cli
+# Install project dependancies locally
 npm install
+# Install git hooks to support development
 grunt hooks
+# Copy the `snippets-sample/` directory to `snippets/`
+cp -r snippets-sample/ snippets
 ```
 
-(most folks will only need the last two lines)
+**The last step is crutial to getting the export step to work.** The snippets directory is the source of snippets for the export tasks.
 
-If you have additional sets of snippets that you want included in your built snippet library, but do not want to commit them to the repo, you can do so one of two ways:
+This snippets directory is your own. Anything in that directory and it's subfolders with a `.snippet` extension will be included when exporting snippets. It's .gitignored, so feel free to do anything you'd like with it, including pulling in additional repos.
 
-1. Add them to `grunt/config/vars/` in the `paths.snippets` object, or
-2. The repo's .gitignore file explicitly excludes any file whose name ends with `_ignore`. If you put a directory full of snippets in `snippets/` with `_ignore` at the end of its name, the snippets won't be included in the repository, but will still be included when exporting snippets to your app of choice/
+If you're developing in the repo, the default grunt task will watch some files and do some stuff for you (lint, beautify, etc.). Use the watch task, use the hooks. Don't push busted code.
 
-# Exporting/Consuming Snippets
+# Exporting Your Snippets
 
-Exporting snippets happens by way of grunt tasks. One should implement a grunt multi-task for exporting snippets to a given format. The app to which you wish to export templates must be supported.
-
-## Supported Apps
+Exporting snippets happens by way of grunt tasks. This project currently supports exporting your snippets to two formats:
 
 - [Dash](http://kapeli.com/dash) - `grunt dash`
 - [Sublime-Style Snippets](https://github.com/pierceray/AMDsnippets) - `grunt text-mate`
+    - Note that support for TextMate style snippets could be added by adding an additional entry in `grunt/config/text-mate.js` with `outputExtension: '.text-mate'` (or whatever extension TextMate expects).
 
-Note that support for TextMate style snippets could be added by adding an additional entry in `grunt/config/text-mate.js` with `outputExtension: '.text-mate'` (or whatever extension TextMate expects).
+For either of the below tasks, once the export has completed, you can point your relevant app to the exported snippet library, or symlink the exported directory as appropriate.
 
-For either of the below tasks, once the export has completed, you can point your relevant app to the exported snippet library.
+### `grunt dash`
 
-TODO: Right now, theres a lot of duplicated code between the translators and the tasks responsible for outputting the snippet library for the given app. Both of these components should inherit from a base module that does a lot of the redundant work.
+Reads in all of the snippet files within the `snippets` directory, and exports them to a SQLite3 database compatible with Dash.
 
-## `grunt dash`
+#### Config
 
-Reads in all of the snippet files specified at `grunt.config.vars.paths.snippets`, and exports them to a SQLite3 database compatible with Dash.
-
-### Arguments
+*Note:* Unless you are working on this tool itself, you likely will not need to worry about the config for this exporter.
 
 ```javascript
 main: {
     options: {
-        // See the below What's Going on Here section for an explanation
+        // See the below Implementing an Exporter section for an explanation
         // of the translator
         translator: global.req( 'dash-translator' )({
             // Optional config varDelimiter, should correspond
@@ -124,16 +140,20 @@ main: {
 
 [dash snippet reference](http://kapeli.com/guide/guide.html#introductionToSnippets)
 
-## `grunt text-mate`
+### `grunt text-mate`
 
-Reads in all of the snippet files specified at `grunt.config.vars.paths.snippets`, and exports them to a directory using syntax that is compatible with TextMate snippets.
+Reads in all of the snippet files within the `snippets` directory, and exports them to a directory using syntax that is compatible with TextMate snippets.
 
-### Arguments
+The [AMDSnippets repo](https://github.com/pierceray/AMDsnippets/) has a good step-by-step on how to install AMDSnippets for SublimeText.
+
+#### Config
+
+*Note:* Unless you are working on this tool itself, you likely will not need to worry about the config for this exporter.
 
 ```javascript
 main: {
     options: {
-        // See the below What's Going on Here section for an explanation
+        // See the below Implementing an Exporter section for an explanation
         // of the translator
         translator: global.req( 'text-mate-translator' ),
         // Where to get the snippets
@@ -147,18 +167,16 @@ main: {
 }
 ```
 
-# What's Going on Here
+# Technical Deep Dive
 
-Each grunt task that performs snippet exporting is expected to follow roughly the same format:
+## Exporters
 
-- Fetch the model for the snippets as specified in the task's options
-- Use the model to generate output that is readable by the target snippet application
+Exporters are grunt tasks. Their expected configurations can be found above (this varies by exporter). Upon being run, `exporter` tasks use the `snippet-loader` module to get an in-memory model of the snippets in the snippets directory. It can iterate over this model to do its exporting. Internally, the `exporter` exposes the `translator` to the `snippet-loader`. As the `snippet-loader` is loading the templates, it will call `translator.translate( snippetContents )`. The return value should be a snippet body that the target export application can understand. If defined, `snippet-loader` will also call `translator.snipTeardown()` in-between snippets, so that the translator can do any necessary internal state management. The translator is responsible for loading handlebars, and defining the correct set of [handlebars helper functions](http://handlebarsjs.com/#helpers) such that the `translator.translate()` function returns the correct result (this function is also responsible for compiling and running the handlebars interpreter on the snippet's contents).
 
-If you refer to the *Sample Snippet* and *Available Helpers* sections above, you will see that the snippets are written as handlebars templates that call a special set of helper functions. These functions are responsible for turning the snippet's contents into text that can be understood by the target snippet application.
+- I anticipate the set of available helpers within snippets to grow as the number of exporters grows.
+- If creating new exporters or translators, please try and follow the naming convention `appName-translator.js` or `appName-exporter.js`.
 
-This happens as a result of the `translator` that gets passed in the task's grunt config. When the model for the snippets is being generated by `lib/snippet-loader.js`, the contents of each snippet will be passed through the translator. Be sure that you implement all helpers that are being used by your snippet library. For sanity, let's try and stick to the blessed list of helpers in the above *Available Helpers* section.
-
-Here is a sample translator for the text-mate task.
+Here is the translator for the text-mate class, with robust comments:
 
 ```javascript
 var _ = require( 'underscore' );
@@ -210,15 +228,25 @@ module.exports = ( function() {
 
 ```
 
-
-
 # Upgrading your snippets
+
+You may find it helpful to define the following alias (or something similar), to quickly re-export your snippets when you change the files in the `snippets` directory:
 
 ```bash
 update_snippets() {
+    # Go into the project directory
     pushd ~/Projects/portable-snippets/ &&
+    # Update the code
     git pull &&
-    grunt dash &&
+    # Do a fresh build of the snippets (this example is for dash)
+    grunt clean dash &&
+    # Go back to whatever folder I was in before this alias started running
     popd
 }
 ```
+
+# To Do List
+
+TODO: Right now, theres a lot of duplicated code between the translators and the tasks responsible for outputting the snippet library for the given app. Both of these components should inherit from a base module that does a lot of the redundant work.
+
+TODO: Take advantage of the global.config with overrides to allow customization of snippet extension, pattern, etc.
