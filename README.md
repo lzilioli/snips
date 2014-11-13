@@ -1,5 +1,5 @@
-snippets
-=====
+portable-snippets
+=================
 
 **Goal**
 
@@ -108,7 +108,9 @@ For either of the below tasks, once the export has completed, you can point your
 
 ### `grunt dash`
 
-Reads in all of the snippet files within the `snippets` directory, and exports them to a SQLite3 database compatible with Dash.
+Reads in all of the snippet files within the `snippets` directory, and exports them to a SQLite3 database compatible with Dash. Just [point Dash to the exported file](http://kapeli.com/dash_guide#managingSnippets).
+
+**WARNING** Currently, this task will destroy and recreate your dash database. It is intended that you use your snippets directory as the source of truth for your snippets. Don't put any snippets directly into Dash.
 
 #### Config
 
@@ -252,3 +254,5 @@ TODO: Right now, theres a lot of duplicated code between the translators and the
 TODO: Take advantage of the global.config with overrides to allow customization of snippet extension, pattern, etc.
 
 TODO: Enable partial support within the snippets directory.
+
+TODO: Let yaml front in snippet opt out of, or define a different snippet prefix in abbreviation
