@@ -250,3 +250,5 @@ update_snippets() {
 TODO: Right now, theres a lot of duplicated code between the translators and the tasks responsible for outputting the snippet library for the given app. Both of these components should inherit from a base module that does a lot of the redundant work.
 
 TODO: Take advantage of the global.config with overrides to allow customization of snippet extension, pattern, etc.
+
+TODO: Enable partial support within the snippets directory.
