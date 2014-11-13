@@ -319,8 +319,6 @@ You may find it helpful to define the following alias (or something similar), to
 update_snippets() {
     # Go into the project directory
     pushd ~/Projects/portable-snippets/ &&
-    # Update the code
-    git pull &&
     # Do a fresh build of the snippets (this example is for dash)
     grunt clean dash &&
     # Go back to whatever folder I was in before this alias started running
