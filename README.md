@@ -160,7 +160,7 @@ If you're developing in the repo, the default grunt task will watch some files a
 Exporting snippets happens by way of grunt tasks. This project currently supports exporting your snippets to two formats:
 
 | Export Task | Target Application | Configuring the App After Export |
-| ----- | ------ |
+| ----- | ------ | ----- |
 | `grunt dash` | [Dash](http://kapeli.com/dash) | Point Dash to `export/Snippets.dash` (in `Dash > Preferences > Snippets`). |
 | `grunt text-mate` | [Sublime-Style Snippets](https://github.com/pierceray/AMDsnippets) | `ln -s ~/Projects/portable-snippets/export/SublimeSnippets/ "~/Library/Application Support/Sublime Text 3/Packages/SublimeSnippets"` |
 
