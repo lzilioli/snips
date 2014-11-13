@@ -211,7 +211,7 @@ module.exports = ( function() {
     return {
         // This function will receive an argument with a 'contents' property.
         // It should return the contents such that the target snippet
-        // application would understand the contents of if the snippet's body.
+        // application would understand the contents of the snippet's body.
         translate: function( opts ) {
             handlebars.helpers = helpers;
             return handlebars.compile( opts.contents )();
