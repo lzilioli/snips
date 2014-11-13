@@ -114,36 +114,44 @@ define( [
 
 # Setup
 
+**Install dependencies if you don't have 'em**
+
+    brew install npm
+    npm install -g grunt-cli
+
+**Get up and running**
+
 ```bash
 # Clone the repo
 git clone https://github.com/lzilioli/portable-snippets.git
+
 # Go into the directory
 cd portable-snippets
-# You only need the next 2 commands if you dont the stuff installed
-brew install npm
-npm install -g grunt-cli
-# Install project dependancies locally
+
+# Install project dependencies locally
 npm install
+
 # Install git hooks to support development
 grunt hooks
 
-# Last Step
-# #########
-
-# Copy the `snippets-sample/` directory to `snippets/`
-mkdir snippets
-cp -r snippets-sample/ snippets/sample
-# --- OR ---
+# Make the snippets directory, this is .gitignored so its
+# totally yours to control. Anything in that directory and
+# it's subfolders with a `.snippet` extension will be included
+# when exporting snippets. It's .gitignored, so feel free to
+# do anything you'd like with it, including pulling in additional
+# repos.
 mkdir snippets
 cd snippets
-git clone <snippet repo url>
+
+# Add some existing snippet libraries
+# If you want my personal snippets, run the following line
+# git clone https://github.com/lzilioli/my-snippets lukes-snippets
+# Or to get started with the project's sample snippets, run the following line
+# cp -r ../snippets-sample/
+
+# This will generate all supported outputs to the export directory
+grunt dash text-mate
 ```
-
-**The last step is crucial to getting the export step to work.** The snippets directory is the source of snippets for the export tasks.
-
-If you choose to clone a snippet repo, I've got one [here](https://github.com/lzilioli/my-snippets), but I highly suggest you make your own (feel free to fork mine).
-
-This snippets directory is your own. Anything in that directory and it's subfolders with a `.snippet` extension will be included when exporting snippets. It's .gitignored, so feel free to do anything you'd like with it, including pulling in additional repos.
 
 If you're developing in the repo, the default grunt task will watch some files and do some stuff for you (lint, beautify, etc.). Use the watch task, use the hooks. Don't push busted code.
 
@@ -151,11 +159,12 @@ If you're developing in the repo, the default grunt task will watch some files a
 
 Exporting snippets happens by way of grunt tasks. This project currently supports exporting your snippets to two formats:
 
-- [Dash](http://kapeli.com/dash) - `grunt dash`
-- [Sublime-Style Snippets](https://github.com/pierceray/AMDsnippets) - `grunt text-mate`
-    - Note that support for TextMate style snippets could be added by adding an additional entry in `grunt/config/text-mate.js` with `outputExtension: '.text-mate'` (or whatever extension TextMate expects).
+| Export Task | Target Application | Configuring the App After Export |
+| ----- | ------ |
+| `grunt dash` | [Dash](http://kapeli.com/dash) | Point Dash to `export/Snippets.dash` (in `Dash > Preferences > Snippets`). |
+| `grunt text-mate` | [Sublime-Style Snippets](https://github.com/pierceray/AMDsnippets) | `ln -s ~/Projects/portable-snippets/export/SublimeSnippets/ "~/Library/Application Support/Sublime Text 3/Packages/SublimeSnippets"` |
 
-For either of the below tasks, once the export has completed, you can point your relevant app to the exported snippet library (in the .gitignored `export/` directory), or symlink the exported directory as appropriate.
+Note that support for TextMate style snippets could be added by adding an additional entry in `grunt/config/text-mate.js` with `outputExtension: '.text-mate'` (or whatever extension TextMate expects).
 
 ### `grunt dash`
 
