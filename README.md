@@ -38,8 +38,6 @@ tags:
 - 'module'
 - 'flightjs'
 language: 'JavaScript'
-abbreviation: amdflight
-abbreviationPrefix: ''
 ---
 ```
 
@@ -48,21 +46,18 @@ abbreviationPrefix: ''
 | ----- | ------ |
 | tags | Array of tags associated with the snippet. (not all exporters will use this value) |
 | language | The language that the snippet is written in. |
-| abbreviation | The name for the snippet, if none is specified, the filename will be used. |
-| abbreviationPrefix | This will override the abbreviationPrefix passed to the exporter. |
 
 *Note:* Currently, the text-mate exporter does not take the language or the tags into account.
 
 TODO: Fix tags bug for dash, tags are being mismatched
 
-### abbreviationPrefix
+### Namespace your snippet's names
 
-As [recommended by Dash](http://kapeli.com/guide/guide.html#snippetTips), you might want to prefix your snippet names. portable-snippets will determine the prefix to use for your snippet name as follows:
+As [recommended by Dash](http://kapeli.com/guide/guide.html#snippetTips), you might want to include a special 'trigger character' in your snippet names. By default, your snippets will be exported with a ` character at the end of their file's basename.
 
-- If defined, use the one in the snippet's yaml-front
-- Else, if defined, use the one defined in the snippet's parent directory's `dir.abbreviationPrefix` file
-- Else, use the one passed as an argument to the task
-- If none of those are defined, use nothing
+i.e. a file named comment.snippet would be registered as <code>comment`</code>
+
+To change this behavior, copy the file at `config/default-settings.js`, rename it `settings.js`, and adjust the variables to your liking.
 
 ## Helpers
 
@@ -85,7 +80,6 @@ tags:
 - 'module'
 - 'flightjs'
 language: 'JavaScript'
-abbreviation: amdflight
 ---
 define( [
     'flight/lib/component'
@@ -229,8 +223,8 @@ module.exports = ( function() {
     var wrapperTmpl = [
         // The translate function registers the ___snippet helper
         '<snippet><content><![CDATA[{{{ ___snippet }}}]]></content>',
-        // abbreviation and description come from the snippetData
-        '<tabTrigger>{{ abbreviation }}</tabTrigger>',
+        // __abbreviation and description come from the snippetData
+        '<tabTrigger>{{ __abbreviation }}</tabTrigger>',
         '<description>{{ description }}</description>',
         // Make them available in all contexts
         '<scope>source,text</scope>',
@@ -295,9 +289,6 @@ main: {
         snippetSource: '<%= vars.paths.snippets %>',
         // Where to put the dash SQLite DB
         exportFile: 'export/Snippets.dash',
-        // Will prefix your snippets abbreviations as recommended
-        // in the dash docs http://kapeli.com/guide/guide.html#snippetTips
-        abbreviationPrefix: '`'
     }
 }
 ```

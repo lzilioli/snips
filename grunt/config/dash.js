@@ -4,8 +4,7 @@ module.exports = function() {
 			options: {
 				translator: global.req( 'dash-translator' )(),
 				snippetSource: '<%= vars.paths.snippets %>',
-				exportFile: 'export/Snippets.dash',
-				abbreviationPrefix: '`'
+				exportFile: 'export/Snippets.dash'
 			}
 		}
 	};

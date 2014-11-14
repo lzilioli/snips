@@ -80,7 +80,7 @@ function getDb( dbPath ) {
 
 function insertSnippet( db, snippet ) {
 	var stmt = db.prepare( 'INSERT INTO `snippets` VALUES(?, ?, ?, ?, ?)' );
-	stmt.run( snippet.__id, snippet.abbreviation, snippet.__content, snippet.language, 0 );
+	stmt.run( snippet.__id, snippet.__abbreviation, snippet.__content, snippet.language, 0 );
 	stmt.finalize();
 }
 

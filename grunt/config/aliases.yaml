@@ -1,19 +1,25 @@
-lint:
-- 'jshint'
-- 'jsbeautifier:lint'
+default:
+- 'watch:all'
 
-js_on_watch:
-- 'jsbeautifier'
-- 'lint'
-
-dev_on_watch:
-- js_on_watch
+export-all:
 - clean
-- dash
 - text-mate
+- dash
+- 'shell:reloadDash'
 
 pre-push:
-- 'lint'
+- lint
 
-default:
-- 'watch:dev'
+lint:
+- jshint
+- 'jsbeautifier:lint'
+
+watch_js:
+- jsbeautifier
+- lint
+
+watch_snippets:
+- export-all
+
+fresh:
+- export-all

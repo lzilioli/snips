@@ -1,10 +1,14 @@
 module.exports = {
+	all: {
+		files: [ '<%= vars.paths.js %>', '<%= vars.paths.snippets %>' ],
+		tasks: [ 'watch_js', 'watch_snippets' ]
+	},
 	js: {
 		files: [ '<%= vars.paths.js %>' ],
-		tasks: [ 'js_on_watch' ]
+		tasks: [ 'watch_js' ]
 	},
-	dev: {
-		files: [ '<%= vars.paths.js %>', '<%= vars.paths.snippets %>' ],
-		tasks: [ 'dev_on_watch' ]
+	snippets: {
+		files: [ '<%= vars.paths.snippets %>' ],
+		tasks: [ 'watch_snippets' ]
 	}
 };
