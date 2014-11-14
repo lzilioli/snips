@@ -156,24 +156,24 @@ If you're developing in the repo, the default grunt task will watch some files a
 
 Exporting snippets happens by way of grunt tasks. This project currently supports exporting your snippets to two formats:
 
-| Export Task | Target Application | Configuring the App After Export |
+| Export Task | Target Application | Action |
 | ----- | ------ | ----- |
-| `grunt dash` | [Dash](http://kapeli.com/dash) | Point Dash to `export/Snippets.dash` (in `Dash > Preferences > Snippets`). |
-| `grunt text-mate` | [Sublime-Style Snippets](https://github.com/pierceray/AMDsnippets) | `ln -s ~/Projects/portable-snippets/export/SublimeSnippets/ "~/Library/Application Support/Sublime Text 3/Packages/SublimeSnippets"` |
+| `grunt export-dash` | [Dash](http://kapeli.com/dash) | Exports your snippets for Dash, and tells Dash to reload them. |
+| `grunt export-sublime` | [Sublime Text 3](http://sublimetext.info/docs/en/extensibility/snippets.html) | Exports your snippets for Sublime Text 3, and prints a command for how to install. |
 
-Note that support for TextMate style snippets could be added by adding an additional entry in `grunt/config/text-mate.js` with `outputExtension: '.text-mate'` (or whatever extension TextMate expects).
+If you have a request for other export formats, [please submit them](https://github.com/lzilioli/portable-snippets/issues).
 
 # Upgrading your snippets
 
 You may find it helpful to define the following alias (or something similar), to quickly re-export your snippets when you change the files in the `snippets` directory:
 
 ```bash
-update_snippets() {
-    # Go into the project directory
-    pushd ~/Projects/portable-snippets/ &&
-    # Do a fresh build of the snippets (this example is for dash)
-    grunt clean dash &&
-    # Go back to whatever folder I was in before this alias started running
+alias snipup() {
+    pushd ~/Projects/portable-snippets
+    # One of the three
+    # grunt export-all
+    # grunt export-dash
+    # grunt export-sublime
     popd
 }
 ```

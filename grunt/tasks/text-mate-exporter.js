@@ -37,6 +37,25 @@ module.exports = function( grunt ) {
 			insertSnippet( snippet, destMap[ snippet.__filepath ] );
 		} );
 	} );
+
+	grunt.registerTask( 'text-mate-post-export', function( target ) {
+		var opts = grunt.config( 'text-mate.' + target + '.options' );
+		grunt.log.writeln( 'Your snippets have been exported to ', opts.snippetDest );
+		if ( target === 'sublime' ) {
+			var symLinkDest = '~/Library/Application Support/Sublime Text 3/Packages/SublimeSnippets';
+			if ( !grunt.file.exists( symLinkDest ) ) {
+				var repoRoot = global.pth( '/' );
+				var exportedSnippetDest = path.join( repoRoot, '/export/sublimeSnippets/' );
+				grunt.log.writeln( 'To install them for SublimeText3, run the following command:' );
+				grunt.log.writeln( [
+					'$'.grey,
+					'ln -s'.blue,
+					exportedSnippetDest.blue,
+					symLinkDest.blue
+				].join( ' ' ) );
+			}
+		}
+	} );
 };
 
 /******************************************************************************

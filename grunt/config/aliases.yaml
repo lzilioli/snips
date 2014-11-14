@@ -3,9 +3,16 @@ default:
 
 export-all:
 - clean
-- text-mate
+- export-dash
+- export-sublime
+
+export-dash:
 - dash
 - 'shell:reloadDash'
+
+export-sublime:
+- text-mate:sublime
+- text-mate-post-export:sublime
 
 pre-push:
 - lint
