@@ -232,8 +232,8 @@ module.exports = ( function() {
         // abbreviation and description come from the snippetData
         '<tabTrigger>{{ abbreviation }}</tabTrigger>',
         '<description>{{ description }}</description>',
-        // The translate function registers the ___scope helper (currently unused, commenting out)
-        // '<scope>{{ ___scope }}</scope>',
+        // Make them available in all contexts
+        '<scope>source,text</scope>',
         '</snippet>'
     ].join( '\n' );
 
@@ -249,10 +249,6 @@ module.exports = ( function() {
             var rendered = handlebars.compile( snippetData.__content )();
             // Register some helpers so we can handlebars the wrapperTmpl (defined above)
             handlebars.registerHelper( '___snippet', rendered );
-            // Commented out until we support this
-            // handlebars.registerHelper( '___scope', function() {
-            //  return getScope( snippetData.language );
-            // } );
             // handlebars-ify the wrapperTmpl using snippetData as model
             var fullSnippet = handlebars.compile( wrapperTmpl )( snippetData );
 
