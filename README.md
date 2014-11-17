@@ -146,8 +146,7 @@ cd snippets
 # Go back to the project root
 cd ..
 
-# This will generate all supported outputs to the export directory
-grunt dash text-mate
+# See the Exporting Your Snippets for instructions on exporting.
 ```
 
 If you're developing in the repo, the default grunt task will watch some files and do some stuff for you (lint, beautify, etc.). Use the watch task, use the hooks. Don't push busted code.
@@ -158,7 +157,7 @@ Exporting snippets happens by way of grunt tasks. This project currently support
 
 | Export Task | Target Application | Action |
 | ----- | ------ | ----- |
-| `grunt export-dash` | [Dash](http://kapeli.com/dash) | Exports your snippets for Dash, and tells Dash to reload them. |
+| `grunt export-dash` | [Dash](http://kapeli.com/dash) | Exports your snippets for Dash, and tells Dash to open the newly generated library. |
 | `grunt export-sublime` | [Sublime Text 3](http://sublimetext.info/docs/en/extensibility/snippets.html) | Exports your snippets for Sublime Text 3, and prints a command for how to install. |
 
 If you have a request for other export formats, [please submit them](https://github.com/lzilioli/portable-snippets/issues).
