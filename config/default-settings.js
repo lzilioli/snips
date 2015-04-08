@@ -6,5 +6,7 @@ module.exports = {
 	snippetPrefix: '',
 	// This will be added at the end of your snippet's name
 	snippetPostfix: '`',
-	// TODO: Add config for getSnippetName function that takes a snippet path
+	// Used in exported dash snippets to surround variables
+	// this setting should match what is in your dash preferences
+	dashVarDelimiter: '__'
 };

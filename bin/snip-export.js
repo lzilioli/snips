@@ -14,9 +14,10 @@ var logger = fromLib( 'logger' );
 
 var supportedFormats = [ 'dash', 'sublime' ];
 
-var formats = ( argv.format || argv.f );
+var formats = ( argv.apps || argv.a );
 if ( !formats ) {
-	logger.user( 'An export format is required. Run with -f or --format followed by a comma separated list of desired export formats.' );
+	logger.user( 'An export format is required. Run with -a or --apps followed by a comma separated list of desired export formats.' );
+	logger.user( 'Currently supported: ' + supportedFormats.join( ',' ) + '.' );
 	process.exit( 1 );
 }
 
@@ -45,8 +46,8 @@ var commonConfig = {
 
 var formatConfigMap = {
 	'sublime': {
-		translator: fromLib( 'text-mate-translator' ),
-		exporter: fromLib( 'text-mate-exporter' ),
+		translator: fromLib( 'sublime-translator' ),
+		exporter: fromLib( 'sublime-exporter' ),
 		snippetDest: path.join( exportDir, 'SublimeSnippets/' ),
 		outputExtension: '.sublime-snippet',
 		afterExport: function() {
@@ -88,7 +89,7 @@ function doExport() {
 	}
 
 	formatCfg = extend( {}, commonConfig, formatCfg );
-	formatCfg.translator = formatCfg.translator( formatCfg );
+	formatCfg.translator = new formatCfg.translator();
 	formatCfg.exporter( formatCfg ).then( handleSuccess, handleError );
 
 	function handleSuccess() {
