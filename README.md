@@ -1,5 +1,5 @@
-portable-snippets
-=================
+snips
+=====
 
 **Goal**
 
