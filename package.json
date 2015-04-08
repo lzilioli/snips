@@ -1,27 +1,32 @@
 {
   "name": "portable-snippets",
   "version": "0.0.0",
+  "preferGlobal": true,
   "description": "Share and port your snippets between multiple tools.",
   "author": "Luke Zilioli",
+  "bin": {
+    "snip": "bin/snip.js",
+    "snip-init": "bin/snip-init.js",
+    "snip-export": "bin/snip-export.js"
+  },
   "dependencies": {
+    "colors": "^1.0.3",
+    "commander": "^2.7.1",
+    "extend": "^2.0.0",
     "glob": "~4.0.6",
     "handlebars": "^2.0.0",
-    "lz-node-utils": "git+http://git@github.com/lzilioli/lz-node-utils.git#b0e80aa",
+    "lz-node-utils": "^0.1.11",
     "mkpath": "^0.1.0",
+    "minimist": "^1.1.1",
+    "q": "^1.0.1",
+    "shelljs": "^0.4.0",
     "sqlite3": "https://github.com/mapbox/node-sqlite3/tarball/master#ab70efa1db",
     "underscore": "^1.7.0",
+    "winston": "^0.9.0",
     "yaml-front-matter": "^3.0.1"
   },
   "devDependencies": {
-    "grunt": "~0.4.5",
-    "grunt-contrib-clean": "^0.6.0",
-    "grunt-contrib-jshint": "~0.6.0",
-    "grunt-contrib-watch": "~0.5.3",
-    "grunt-jsbeautifier": "~0.2.7",
-    "grunt-shell": "^1.1.1",
-    "grunt-todo": "~0.4.0",
-    "jshint-stylish": "^0.4.0",
-    "load-grunt-config": "^0.12.0",
-    "shelljs": "~0.3.0"
+    "grunt": "^0.4.5",
+    "shared-grunt-config": "lzilioli/shared-grunt-config#43ab8b9"
   }
 }

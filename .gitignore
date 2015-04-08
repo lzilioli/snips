@@ -1,7 +1,5 @@
 .DS_STORE
-.git
 node_modules/
-.sass-cache/
 config/settings.js
 export/
-snippets/
+npm-debug.log
