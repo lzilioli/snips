@@ -1,6 +1,6 @@
 {
   "name": "snips",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "preferGlobal": true,
   "description": "Share and port your snippets between multiple tools.",
   "author": "Luke Zilioli",
