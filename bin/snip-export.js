@@ -55,7 +55,7 @@ var commonConfig = {
 
 var formatConfigMap = {
 	'sublime': {
-		translator: fromLib( 'sublime-translator' ),
+		translator: fromLib( 'translators/sublime' ),
 		exporter: fromLib( 'sublime-exporter' ),
 		snippetDest: path.join( exportDir, 'SublimeSnippets/' ),
 		outputExtension: '.sublime-snippet',
@@ -72,7 +72,7 @@ var formatConfigMap = {
 		}
 	},
 	'dash': {
-		translator: fromLib( 'dash-translator' ),
+		translator: fromLib( 'translators/dash' ),
 		exporter: fromLib( 'dash-exporter' ),
 		snippetDest: path.join( exportDir, '/Snippets.dash' ),
 		afterExport: function() {
