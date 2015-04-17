@@ -19,7 +19,7 @@ brew install node
 npm install -g snips
 snip init
 snip export --help
-# To se a list of all commands, run
+# To see a list of all commands, run
 snip --help
 ```
 

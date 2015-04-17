@@ -10,7 +10,6 @@ var program = require( 'commander' );
 program
 	.description( 'Clone a repo into ~/.snippets' )
 	.usage( '[options] <file>' )
-	.option( '-c, --clone', 'repository to clone' )
 	.parse( process.argv );
 
 var snippets = path.join( process.env.HOME, '.snippets' );
@@ -20,8 +19,6 @@ if ( !program.args.length && !program.clone ) {
 	snips.logger.user( 'You must specify a url to clone.'.red );
 	process.exit( 1 );
 }
-
-var cloneUrl = program.args[ 0 ] || program.clone;
 
 // Do they have git?, will exit if not
 snips.helpers.gitCheck();
@@ -35,7 +32,8 @@ if ( wasSuccessful ) {
 function performClone() {
 	shell.cd( snippets );
 	shell.config.silent = true;
-	var result = shell.exec( 'git clone ' + cloneUrl );
+	var cloneArguments = ( program.args ).join( ' ' );
+	var result = shell.exec( 'git clone ' + cloneArguments );
 	shell.config.silent = false;
 	snips.logger.user( result.output.trim()[ result.code === 0 ? 'green' : 'yellow' ] );
 	return result.code === 0;
