@@ -1,5 +1,8 @@
 #!/usr/bin/env node
 
+var path = require( 'path' );
+process.chdir( path.join( __dirname, '..' ) );
+
 var _ = require( 'underscore' );
 var snips = require( '../lib/snips' );
 
