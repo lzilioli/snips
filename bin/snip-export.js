@@ -61,13 +61,12 @@ var formatConfigMap = {
 		outputExtension: '.sublime-snippet',
 		afterExport: function() {
 			var symLinkDest = '~/Library/Application Support/Sublime Text 3/Packages/SublimeSnippets';
+			var lnDest = '${HOME}/Library/Application Support/Sublime Text 3/Packages/SublimeSnippets';
 			if ( !fs.existsSync( symLinkDest ) ) { // TODO Check that is symlink
 				snips.logger.user( 'To install them for SublimeText3, run the following command:' );
 				snips.logger.user( [
 					'$'.grey,
-					'ln -s'.blue,
-					this.snippetDest.blue,
-					symLinkDest.blue
+					'ln -s'.blue, ( '"' + this.snippetDest + '"' ).blue, ( '"' + lnDest + '"' ).blue
 				].join( ' ' ) );
 			}
 		}
