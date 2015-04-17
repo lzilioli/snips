@@ -4,20 +4,19 @@
   "preferGlobal": true,
   "description": "Share and port your snippets between multiple tools.",
   "author": "Luke Zilioli",
+  "main": "lib/snips.js",
   "bin": {
-    "snip": "bin/snip.js",
-    "snip-init": "bin/snip-init.js",
-    "snip-export": "bin/snip-export.js"
+    "snip": "bin/snip.js"
   },
   "dependencies": {
     "colors": "^1.0.3",
     "commander": "^2.7.1",
     "extend": "^2.0.0",
     "glob": "~4.0.6",
-    "handlebars": "^2.0.0",
-    "lz-node-utils": "^0.1.11",
-    "mkpath": "^0.1.0",
+    "handlebars": "^3.0.1",
+    "lz-node-utils": "^0.2.0",
     "minimist": "^1.1.1",
+    "mkpath": "^0.1.0",
     "q": "^1.0.1",
     "shelljs": "^0.4.0",
     "sqlite3": "https://github.com/mapbox/node-sqlite3/tarball/master#ab70efa1db",

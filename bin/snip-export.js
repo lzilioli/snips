@@ -9,22 +9,31 @@ var extend = require( 'extend' );
 
 var util = require( 'lz-node-utils' );
 var fromLib = util.getReqFn( 'lib' );
-var argv = fromLib( 'args' );
-var logger = fromLib( 'logger' );
+var snips = fromLib( 'snips' );
 
 var supportedFormats = [ 'dash', 'sublime' ];
 
-var formats = ( argv.apps || argv.a );
+// TODO export specify children and auto export to app
+// TODO use commander
+// TODO allow --all flag
+
+var formats = ( snips.argv.apps || snips.argv.a );
 if ( !formats ) {
-	logger.user( 'An export format is required. Run with -a or --apps followed by a comma separated list of desired export formats.' );
-	logger.user( 'Currently supported: ' + supportedFormats.join( ',' ) + '.' );
+	snips.logger.user(
+		[
+			'For what app(s)?'.yellow,
+			'$'.grey,
+			'grunt snip -a | --apps ['.blue,
+			supportedFormats.join( ',' ).blue,
+			']'.blue
+		].join( ' ' ) );
 	process.exit( 1 );
 }
 
 formats = _.map( formats.split( ',' ), function( format ) {
 	format = format.trim();
 	if ( !_.contains( supportedFormats, format ) ) {
-		logger.user( ( 'Unrecognized format: ' + format ).red );
+		snips.logger.user( ( 'Unrecognized format: ' + format ).red );
 		process.exit( 1 );
 	}
 	return format;
@@ -52,9 +61,9 @@ var formatConfigMap = {
 		outputExtension: '.sublime-snippet',
 		afterExport: function() {
 			var symLinkDest = '~/Library/Application Support/Sublime Text 3/Packages/SublimeSnippets';
-			if ( !fs.existsSync( symLinkDest ) ) { // TODO: Check that is symlink
-				logger.user( 'To install them for SublimeText3, run the following command:' );
-				logger.user( [
+			if ( !fs.existsSync( symLinkDest ) ) { // TODO Check that is symlink
+				snips.logger.user( 'To install them for SublimeText3, run the following command:' );
+				snips.logger.user( [
 					'$'.grey,
 					'ln -s'.blue,
 					this.snippetDest.blue,
@@ -68,12 +77,20 @@ var formatConfigMap = {
 		exporter: fromLib( 'dash-exporter' ),
 		snippetDest: path.join( exportDir, '/Snippets.dash' ),
 		afterExport: function() {
-			logger.user( 'To install them for Dash, run the following command:' );
-			logger.user( [
-				'$'.grey,
-				'open'.blue,
-				this.snippetDest.blue
-			].join( ' ' ) );
+			// TODO Add config option to not perform import
+			var result = shell.exec( 'open ' + this.snippetDest );
+			if ( result.code !== 0 ) {
+				snips.logger.user( 'An error occurred trying to load the Snippets into Dash.'.red );
+				snips.logger.user( 'To install them for Dash, run the following command:' );
+				snips.logger.user( [
+					'$'.grey,
+					'open'.blue,
+					this.snippetDest.blue
+				].join( ' ' ) );
+				process.exit( 1 );
+			} else {
+				snips.logger.user( 'Successfully imported snippets into Dash.'.red );
+			}
 		}
 	}
 };
@@ -93,13 +110,15 @@ function doExport() {
 	formatCfg.exporter( formatCfg ).then( handleSuccess, handleError );
 
 	function handleSuccess() {
-		logger.user( ( 'Done exporting ' + format + ' Snippets to ' + formatCfg.snippetDest ).green );
+		snips.logger.user( ( 'Done exporting ' + format + ' Snippets to ' + formatCfg.snippetDest ).green );
 		formatCfg.afterExport.call( formatCfg );
-		if ( formats.length ) doExport();
+		if ( formats.length ) {
+			doExport();
+		}
 	}
 
 	function handleError( e ) {
-		logger.user( ( 'An error occurred exporting ' + format ).red );
-		logger.user( e );
+		snips.logger.user( ( 'An error occurred exporting ' + format ).red );
+		snips.logger.user( e );
 	}
 }
