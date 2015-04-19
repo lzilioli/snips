@@ -8,11 +8,6 @@ var snips = require( '../lib/snips' );
 
 var wantsHelp = snips.argv.h || snips.argv.help;
 
-if ( wantsHelp || process.argv.length < 3 ) {
-	help();
-	process.exit( 1 );
-}
-
 var desiredCommand = process.argv[ 2 ];
 
 // Enforce that some tasks require ~/.snippets to exist.
@@ -59,8 +54,11 @@ switch ( desiredCommand ) {
 		}
 		break;
 	default:
-		snips.logger.user( ( 'Unrecognized command: ' + desiredCommand ).yellow );
+		if ( !wantsHelp ) {
+			snips.logger.user( ( 'Unrecognized command: ' + desiredCommand ).yellow );
+		}
 		help();
+		process.exit( 1 );
 		break;
 }
 
