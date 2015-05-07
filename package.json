@@ -17,6 +17,7 @@
     "lz-node-utils": "^0.2.0",
     "minimist": "^1.1.1",
     "mkpath": "^0.1.0",
+    "node-html-encoder": "0.0.2",
     "q": "^1.0.1",
     "shelljs": "^0.4.0",
     "sqlite3": "https://github.com/mapbox/node-sqlite3/tarball/master#ab70efa1db",

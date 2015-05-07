@@ -5,7 +5,7 @@ var mkpath = require( 'mkpath' );
 var path = require( 'path' );
 var snips = require( '../lib/snips' );
 
-var supportedFormats = [ 'dash', 'sublime' ];
+var supportedFormats = [ 'dash', 'sublime', 'phpstorm' ];
 
 var help = snips.argv.h || snips.argv.help;
 var formats = snips.argv.apps;
