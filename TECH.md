@@ -6,149 +6,67 @@ This project is comprised of 4 components:
 
 | Component | Description |
 | --------- | ----------- |
-| [snippets](#snippets) | A portable, plain-text, file-based syntax for your code snippets. No more being tied to some random snippet app and its xml or sqlite storage. |
-| [exporters](#exporters) | Grunt multi-tasks that interact with the snippet-loader in order to export your templates to a format for a target application. |
-| snippet-loader | A JS module that is responsible for reading your template files and returning a model representing them for export. (this is used internally by exporters) |
-| translators | A JS module that is responsible for converting the portable-snippets format into a format that the target application can understand. Translators usually have a 1:1 mapping with exporters. |
+| snippets | A portable, plain-text, file-based syntax for your code snippets. No more being tied to some random snippet app and its xml or sqlite storage. |
+| [snips.loader](#snips.loader) | A JS module that is responsible for reading your template files and returning a model representing them for export. (this is used internally by exporters) |
+| [exporters](#exporters) | JS modules that are responsible for exporting the snippets for a particular application. |
+| [translators](#translators) | A JS module that is responsible for converting snippets of the snips format into a format that the target application can understand. Translators usually have a 1:1 mapping with exporters. |
 
 For an in-depth technical overview, see [Technical Deep Dive](#technical-deep-dive)
 
 # Technical Deep Dive
 
+## snips
+
+In general, this module should be used to access most components contained within the snips codebase. It exposes a logger, the snippet loader, the program's arguments, a bridge to the cli commands implemented in `bin/` and many other useful things while working in the snips codebase.
+
+### snips.loader
+
+This module is responsible for loading in the snippets from the user's snippets directory. The result of calling load will be available in `this.snippetData` within exporters. That data is as follows:
+
+```javascript
+{ 
+  data: {
+    snippets: [ {
+        tags: ['tags', 'for', 'snippet'],
+        language: 'snippet language as specified in the YAML front matter',
+        __content: 'Rendered snippet body as returned by the translator',
+        __id: <snippet_id>,
+        __filepath: 'fully/qualified/path/to/snippet/file',
+        __abbreviation: 'name of snippet file with pre and postfixes',
+      __variables: ['array of all variables defined within the snippet (  Determined by looking for invocations of the v handlebars helper.']
+      }, { ... } ],
+    tags: [ { __id: <tag_id>, name: 'tag name' }, { ... } ]
+  },
+  getTagId: function(name) { /* returns a tag id given its name */ }
+}
+```
+
 ## Exporters
 
-Exporters are grunt tasks. Their expected configurations can be found above (this varies by exporter). Upon being run, `exporter` tasks use the `snippet-loader` module to get an in-memory model of the snippets in the snippets directory. It can iterate over this model to do its exporting (to see a sample exporter, look at `grunt/tasks/*-exporter.js`). Internally, the `exporter` exposes the `translator` to the `snippet-loader`. As the `snippet-loader` is loading the templates, it will call `translator.translate( snippetData )`. The return value should be a snippet body that the target export application can understand. If defined, `snippet-loader` will also call `translator.snipTeardown()` in-between snippets, so that the translator can do any necessary internal state management. The translator is responsible for loading handlebars, and defining the correct set of [handlebars helper functions](http://handlebarsjs.com/#helpers) such that the `translator.translate()` function returns the correct result (this function is also responsible for compiling and running the handlebars interpreter on the snippet's contents).
+Exporters are modules that should inherit from `lib/proto/exporter.js`. To implement a new exporter, look at some examples in `lib/exporters`.
 
-- I anticipate the set of available helpers within snippets to grow as the number of exporters grows.
-- If creating new exporters or translators, please try and follow the naming convention `appName-translator.js` or `appName-exporter.js`.
+Each exporter must define the following:
 
-Here is the translator for the text-mate class, with robust comments:
+| Value | Description |
+| ----- | ------ |
+| translator | An instantiated translator. |
+| name | A string that represents the name of the Exporter. |
+| export | A function that performs the actual exporting of the snippets. |
+| snippetDest | A string that represents where the snippets should be exported to. Should be relative to `snips.exportDir` |
+| afterExport | A function that runs once exporting has completed. This function should use `snips.logger.user` to instruct the user on how to import the snippets into the applicable app. |
 
-```javascript
-var _ = require( 'underscore' );
+### export
 
-module.exports = ( function() {
+The export function should access `this.snippetData` for purposes of accessing the available snippets. `this.snippetData` contains the result of calling `snippetLoader.load`.
 
-    var handlebars = require( 'handlebars' );
+## Translators
 
-    // Used to track internal state across calls to the v helper
-    var curTabIndex = 1;
-    var tabIndices = {};
+Translators are modules that should inherit from `lib/proto/translator.js`. To implement a new exporter, look at some examples in `lib/translators`.
 
-    var helpers = {
-        // This should return text that the app's snippet engine
-        // would recognize as a variable.
-        v: function( variableName ) {
-            if ( !tabIndices[ variableName ] ) {
-                tabIndices[ variableName ] = curTabIndex++;
-            }
-            var varTabIdx = tabIndices[ variableName ];
-            return '${' + varTabIdx + ':' + variableName + '}';
-        },
-        // This should return text that the app's snippet engine
-        // would recognize as the location for your cursor once
-        // the snippet has been placed.
-        cursor: function() {
-            return '$0';
-        }
-    };
+Each translator must define the following:
 
-    var wrapperTmpl = [
-        // The translate function registers the ___snippet helper
-        '<snippet><content><![CDATA[{{{ ___snippet }}}]]></content>',
-        // __abbreviation and description come from the snippetData
-        '<tabTrigger>{{ __abbreviation }}</tabTrigger>',
-        '<description>{{ description }}</description>',
-        // Make them available in all contexts
-        '<scope>source,text</scope>',
-        '</snippet>'
-    ].join( '\n' );
-
-    // Public API
-    return {
-        // This function will receive an argument with a 'contents' property.
-        // It should return the contents such that the target snippet
-        // application would understand the contents of the snippet's body.
-        translate: function( snippetData ) {
-            // Register the static helpers defined above
-            handlebars.helpers = helpers;
-            // Get the snippet body
-            var rendered = handlebars.compile( snippetData.__content )();
-            // Register some helpers so we can handlebars the wrapperTmpl (defined above)
-            handlebars.registerHelper( '___snippet', rendered );
-            // handlebars-ify the wrapperTmpl using snippetData as model
-            var fullSnippet = handlebars.compile( wrapperTmpl )( snippetData );
-
-            return fullSnippet;
-        },
-        // This will get called by `lib/snippet-loader.js` in between
-        // processing snippets. This way, you can manage any internal state you
-        // need while performing the translation.
-        snipTeardown: function() {
-            curTabIndex = 1;
-            tabIndices = {};
-        }
-    };
-}() );
-
-```
-
-### Exporter Config Documentation
-
-### `grunt dash`
-
-Reads in all of the snippet files within the `snippets` directory, and exports them to a SQLite3 database compatible with Dash. Just [point Dash to the exported file](http://kapeli.com/dash_guide#managingSnippets).
-
-**WARNING** Currently, this task will destroy and recreate your dash database. It is intended that you use your snippets directory as the source of truth for your snippets. Don't put any snippets directly into Dash.
-
-#### Config
-
-*Note:* Unless you are working on this tool itself, you likely will not need to worry about the config for this exporter.
-
-```javascript
-main: {
-    options: {
-        // See the below Implementing an Exporter section for an explanation
-        // of the translator
-        translator: global.req( 'dash-translator' )({
-            // Optional config varDelimiter, should correspond
-            // to the setting in dash preferences (defaults to __)
-            // (this is true only of the dash-translator, note that the
-            // text-mate translator does not require an invocation
-            // prior to exposing the translator API.
-            varDelimiter: '__'
-        }),
-        // Where to get the snippets
-        snippetSource: '<%= vars.paths.snippets %>',
-        // Where to put the dash SQLite DB
-        exportFile: 'export/Snippets.dash',
-    }
-}
-```
-
-[dash snippet reference](http://kapeli.com/guide/guide.html#introductionToSnippets)
-
-### `grunt text-mate`
-
-Reads in all of the snippet files within the `snippets` directory, and exports them to a directory using syntax that is compatible with TextMate snippets.
-
-#### Config
-
-*Note:* Unless you are working on this tool itself, you likely will not need to worry about the config for this exporter.
-
-```javascript
-main: {
-    options: {
-        // See the below Implementing an Exporter section for an explanation
-        // of the translator
-        translator: global.req( 'text-mate-translator' ),
-        // Where to get the snippets
-        snippetSource: '<%= vars.paths.snippets %>',
-        // Where to put the snippets (directory structure from their source
-        // will be preserved)
-        snippetDest: 'export/SublimeSnippets/',
-        // Extension for each exported snippet within snippetDest
-        outputExtension: '.sublime-snippet'
-    }
-}
-```
+| Value | Description |
+| ----- | ------ |
+| helpers | An object of helpers to be registered with Handlebars. This object must contain two helpers: `v` and `cursor`. |
+| translate | A function that takes a snippet's data as loaded by `snips.loader` and returns the snippet formatted properly for the desired application. When this function is invoked, the argument's `__content` key will contain the snippet's body without the YAML front matter. The return value of this function will replace the `__content` key to be used later by the exporter. The translate function can access `this.handlebars`, which will be an instantiated handlebars instance with the translator's helpers already defined. |
+| snipTeardown | An (optional) function that is invoked by the loader in between rendering snippets. This may be useful for a translator that needs to maintain state between rendering templates (see the Sublime translator for an example of this in use.) |

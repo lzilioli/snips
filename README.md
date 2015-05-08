@@ -23,7 +23,13 @@ snip export --help
 snip --help
 ```
 
-If you have a request for other export formats, [please submit them](https://github.com/lzilioli/portable-snippets/issues).
+snips currently supports the following apps:
+
+- Dash
+- SublimeText3
+- PHPStorm (tested with version 6.0.3)
+
+If you have a request for other export formats, [please submit them](https://github.com/lzilioli/snips/issues).
 
 # Snippets
 
