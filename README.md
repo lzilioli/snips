@@ -66,7 +66,7 @@ As [recommended by Dash](http://kapeli.com/guide/guide.html#snippetTips), you mi
 
 i.e. a file named comment.snippet would be registered as <code>comment`</code>
 
-To change this behavior, see `snip config --help` or just run `snip config -e`.
+To change this behavior, see `snips config --help` or just run `snips config -e`.
 
 ## Helpers
 
