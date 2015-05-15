@@ -17,10 +17,10 @@ brew install node
 
 ```bash
 npm install -g snips
-snip init
-snip export --help
+snips init
+snips export --help
 # To see a list of all commands, run
-snip --help
+snips --help
 ```
 
 snips currently supports the following apps:

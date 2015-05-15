@@ -7,6 +7,7 @@ var _ = require( 'underscore' );
 var snips = require( '../lib/snips' );
 
 var wantsHelp = snips.argv.h || snips.argv.help;
+var wantsVersion = snips.argv.v || snips.argv.version;
 
 var desiredCommand = process.argv[ 2 ];
 
@@ -54,6 +55,11 @@ switch ( desiredCommand ) {
 		}
 		break;
 	default:
+		if ( wantsVersion ) {
+			snips.logger.user( snips.pkg.version );
+			process.exit( 0 );
+			break;
+		}
 		if ( !wantsHelp ) {
 			snips.logger.user( ( 'Unrecognized command: ' + desiredCommand ).yellow );
 		}

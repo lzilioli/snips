@@ -6,7 +6,7 @@
   "author": "Luke Zilioli",
   "main": "lib/snips.js",
   "bin": {
-    "snip": "bin/snip.js"
+    "snips": "bin/snips.js"
   },
   "dependencies": {
     "colors": "^1.0.3",
